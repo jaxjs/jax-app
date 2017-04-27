@@ -5,9 +5,10 @@
 (function(window){
     window.app = {
         "router" : {
-            "routes" : [],
-            "params" : [],
-            "add"    : function(route, controller) {
+            "routes"  : [],
+            "params"  : [],
+            "matched" : null,
+            "add"     : function(route, controller) {
                 var params = route.match(/\/\:+\w*/g);
                 if ((params != null) && (params.length > 0)) {
                     for (var i = 0; i < params.length; i++) {
@@ -17,31 +18,36 @@
                 window.app.router.routes[route] = controller;
             },
             "hasRoute"  : function(route) {
-                var matchedRoute = null;
                 for (var pattern in window.app.router.routes) {
-                    var regex = new RegExp(pattern);
-                    if (regex.test(route)) {
-                        matchedRoute = pattern;
+                    if (pattern.indexOf('/.') != -1) {
+                        var regex = new RegExp(pattern);
+                        if (regex.test(route)) {
+                            window.app.router.matched = pattern;
+                        }
+                    } else if (pattern == route) {
+                        window.app.router.matched = pattern;
                     }
                 }
-                return (matchedRoute != null);
+                return (window.app.router.matched != null);
             },
             "getRoute"  : function(route) {
-                var matchedRoute = null;
-                for (var pattern in window.app.router.routes) {
-                    var regex = new RegExp(pattern);
-                    if (regex.test(route)) {
-                        matchedRoute = window.app.router.routes[pattern];
-
-                    }
+                if (window.app.router.matched == null) {
+                    window.app.router.hasRoute(route);
                 }
-                return matchedRoute;
+                return (window.app.router.matched != null) ?
+                    window.app.router.routes[window.app.router.matched] : null;
             }
         },
         "dispatch" : function(route) {
             if (window.app.router.hasRoute(route)) {
-                if (params != undefined) {
-                    window.app.router.getRoute(route).apply(params);
+                var params = [];
+                if (window.app.router.matched.indexOf('/.') != -1) {
+                    var stem = window.app.router.matched.substring(0, window.app.router.matched.indexOf('/.') + 1);
+                    params = route.substring(stem.length).split('/');
+                }
+                if (params.length > 0) {
+                    console.log(params);
+                    window.app.router.getRoute(route).apply(null, params);
                 } else {
                     window.app.router.getRoute(route).call();
                 }
@@ -82,7 +88,6 @@ app.router.add('/users/:id', function(id){
 app.router.add('error', function(){
     alert('Error');
 });
-
 
 $(window).on('hashchange', window.app.run);
 
