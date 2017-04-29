@@ -5,11 +5,15 @@
 app.controller('Index', function(){
     console.log('Index page');
     app.prepareView();
+    app.setTitle('Hello World : Home Page');
+    app.send();
 });
 
 app.controller('Login', function(){
     console.log('Login page');
     app.prepareView();
+    app.setTitle('Hello World : Login Page');
+    app.send();
 });
 
 app.controller('Logout', function(){

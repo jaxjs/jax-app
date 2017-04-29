@@ -14,12 +14,19 @@
         "getController" : function(name) {
             return (window.app.controllers[name] != undefined) ? window.app.controllers[name] : null;
         },
-        "prepareView" : function(id) {
+        "setTitle"    : function(title) {
+            document.title = title;
+        },
+        "prepareView" : function() {
+            window.app.view = jax.http.get('/views/' + app.router.getView());
+        },
+        "send" : function(id) {
             if (id == undefined) {
                 id = '#my-app';
             }
-            $(id)[0].innerHTML = jax.http.get('/views/' + app.router.getView());
+            $(id)[0].innerHTML = window.app.view;
         },
+        "view"          : null,
         "router"        : {
             "routes"    : [],
             "views"     : [],
