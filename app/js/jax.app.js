@@ -20,11 +20,41 @@
         "prepareView" : function() {
             window.app.view = jax.http.get('/views/' + app.router.getView());
         },
+        "bind" : function(id) {
+            var view = window.app.view;
+            //console.log(window.$scope.username);
+            for (var key in window.$scope) {
+                if (view.indexOf('[{' + key + '}]') != -1) {
+                    $(id)[0].innerHTML = view.replace(new RegExp("\\[{" + key + "}\\]", 'g'), window.$scope[key]);
+                    var models = $("[data-jax-model='" + key + "']");
+                    for (var i = 0; i < models.length; i++) {
+                        if (models[i].nodeName == 'INPUT') {
+                            $(models[i]).val(window.$scope[key]);
+                        } else {
+                            models[i].innerHTML = window.$scope[key];
+                        }
+                        if ((models[i].nodeName == 'INPUT') || (models[i].nodeName == 'TEXTAREA')) {
+                            $(models[i]).keyup((function (k, m) {
+                                return function () {
+                                    window.$scope[key] = this.value;
+                                    window.app.bind(id);
+                                    //this.focus();
+                                    //$(id)[0].onload = function(m) {
+                                    //    m.focus();
+                                    //};
+                                    //console.log(m.nodeName);
+                                }
+                            }(key, models[i])));
+                        }
+                    }
+                }
+            }
+        },
         "send" : function(id) {
             if (id == undefined) {
                 id = '#my-app';
             }
-            $(id)[0].innerHTML = window.app.view;
+            window.app.bind(id);
         },
         "view"          : null,
         "router"        : {
@@ -117,6 +147,7 @@
             window.app.dispatch(route);
         }
     };
+    window.$scope = {};
 })(window);
 
 $(window).on('hashchange', window.app.run);

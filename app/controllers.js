@@ -5,6 +5,7 @@
 app.controller('Index', function(){
     console.log('Index page');
     app.prepareView();
+    $scope.username = 'testuser';
     app.setTitle('Hello World : Home Page');
     app.send();
 });
