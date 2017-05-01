@@ -18,16 +18,21 @@ app.controller('Login', function(){
 
 app.controller('Logout', function(){
     console.log('Logout');
+    app.setTitle('Hello World : Logout Page');
 });
 
 app.controller('Users', function(){
     console.log('Users page');
+    app.setTitle('Hello World : Users Page');
 });
 
 app.controller('UsersEdit', function(id){
     console.log('Users edit page ' + id);
+
+    app.setTitle('Hello World : Users edit page ' + id);
 });
 
 app.controller('Error', function(){
     console.log('Error');
+    app.setTitle('Hello World : Error Page');
 });
