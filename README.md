@@ -1,8 +1,6 @@
 Jax Single-Page Application
 ===========================
 
-OVERVIEW
---------
 `jax-app` is a simple, single-page application MVC framework that
 utilizes common Javascript Bootstrap and jQuery
 
@@ -17,22 +15,22 @@ A basic structure of an application might look like:
     + controllers.js
     + routes.js
     + services.js
-/css
-   app.css
-/fonts
-/img
-/views
-   index.html
-   error.html
-index.html
+- /css
+    + app.css
+- /fonts
+- /img
+- /views
+    + index.html
+    + error.html
+- index.html
 
 The ``app.js`` script would need to minimally include:
 
-``js
+```js
 $(document).ready(function(){
     app.run();
 });
-``
+```
 And within the main ``index.html`` file, you would have:
 
 ```html
@@ -55,22 +53,22 @@ CONTROLLERS & ROUTES
 
 You can set up controllers like this:
 
-``js
+```js
 app.controller('Index', function(){
     $scope.username = 'testuser';
     app.setTitle('Hello World : Home Page');
     app.send();
 });
-``
+```
 
 And the add them to a route like this:
 
-``js
+```js
 app.router.add('/', {
     "controller" : 'Index',
     "view"       : 'index.html'
 });
-``
+```
 
 SERVICES
 ========
@@ -85,19 +83,19 @@ By default, the service container has the following services available:
 
 You can add your own service to the service container like this:
 
-``js
+```js
 app.addService('foo', function() {
     return 'Gimme some foo!';
 });
-``
+```
 
 BINDING MODELS
 ==============
 
 Within your view templates, you can bind the model to the view like this:
 
-``html
+```html
     <h1>Welcome, [{username}]</h1>
     <div><input type="text" id="username1" data-jax-model="username" size="20"/></div>
-``
+```
 
