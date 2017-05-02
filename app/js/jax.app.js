@@ -4,9 +4,13 @@
 
 (function(window){
     window.app = {
-        "isError"     : false,
-        "controllers" : [],
-        "controller"  : function(name, controller) {
+        "config"       : {
+            "viewPath" : '/views/',
+            "appId"    : '#my-app'
+        },
+        "isError"      : false,
+        "controllers"  : [],
+        "controller"   : function(name, controller) {
             window.app.controllers[name] = controller;
         },
         "hasController" : function(name) {
@@ -46,10 +50,10 @@
             }
         },
         "viewExists" : function(view) {
-            return jax.http.isSuccess('/views/' + view);
+            return jax.http.isSuccess(window.app.config.viewPath + view);
         },
         "getView" : function(view) {
-            return jax.http.get('/views/' + view);
+            return jax.http.get(window.app.config.viewPath + view);
         },
         "setView" : function(id, view) {
             if ((view != null) && (view != undefined)) {
@@ -60,11 +64,11 @@
         },
         "prepareView" : function(id) {
             window.app.view = null;
-            if ((!window.app.isError) && (app.router.getView() != undefined) && (jax.http.isSuccess('/views/' + app.router.getView()))) {
-                window.app.view = jax.http.get('/views/' + app.router.getView());
+            if ((!window.app.isError) && (app.router.getView() != undefined) && (jax.http.isSuccess(window.app.config.viewPath + app.router.getView()))) {
+                window.app.view = jax.http.get(window.app.config.viewPath + app.router.getView());
             } else if ((window.app.isError) && (window.app.router.errorView != null) &&
-                (window.app.router.errorView != undefined) && (jax.http.isSuccess('/views/' + window.app.router.errorView))) {
-                window.app.view = jax.http.get('/views/' + window.app.router.errorView);
+                (window.app.router.errorView != undefined) && (jax.http.isSuccess(window.app.config.viewPath + window.app.router.errorView))) {
+                window.app.view = jax.http.get(window.app.config.viewPath + window.app.router.errorView);
             } else if ((id != undefined) && (id != null)) {
                 if (window.app.defaultView == null) {
                     window.app.defaultView = $(id)[0].innerHTML;
@@ -116,7 +120,7 @@
         },
         "send" : function(id) {
             if (id == undefined) {
-                id = '#my-app';
+                id = window.app.config.appId;
             }
             window.app.prepareView(id);
             window.app.bind(id);

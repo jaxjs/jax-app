@@ -2,7 +2,7 @@ Jax Single-Page Application
 ===========================
 
 `jax-app` is a simple, single-page application MVC framework that
-utilizes common Javascript Bootstrap and jQuery
+utilizes the common JavaScript libraries Bootstrap and jQuery
 
 STRUCTURE
 ---------
