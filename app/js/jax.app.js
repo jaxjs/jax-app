@@ -109,6 +109,29 @@
                     }
                 }
             }
+
+            var repeats = $("[data-jax-repeat]");
+
+            for (var i = 0; i < repeats.length; i++) {
+                var attr = $(repeats[i]).attr('data-jax-repeat');
+                if (attr.indexOf('|') != -1) {
+                    var attrAry = attr.split('|');
+                    var key     = attrAry[0];
+                    var tmpl    = attrAry[1];
+                    if ((window.$scope[key] != undefined) && (window.$scope[key].constructor == Array) &&
+                        (jax.http.isSuccess(window.app.config.viewPath + tmpl))) {
+                        view = jax.http.get(window.app.config.viewPath + tmpl);
+                        for (var j = 0; j < window.$scope[key].length; j++) {
+                            var row  = view;
+                            for (var prop in window.$scope[key][j]) {
+                                row = row.replace(new RegExp("\\[{" + prop + "}\\]", 'g'), window.$scope[key][j][prop]);
+                            }
+                            $(repeats[i]).append(row);
+                        }
+                    }
+                }
+            }
+
             if (window.app.complete != null) {
                 window.app.complete.call();
             }

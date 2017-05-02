@@ -21,10 +21,28 @@ app.controller('Logout', function() {
 });
 
 app.controller('Users', function() {
+    $scope.username = 'testuser';
+    $scope.foo      = $services.foo();
+    $scope.users    = [
+        {
+            "id"       : 1001,
+            "username" : "testuser1",
+            "email"    : "test1@test.com"
+        },
+        {
+            "id"       : 1002,
+            "username" : "testuser2",
+            "email"    : "test2@test.com"
+        },
+        {
+            "id"       : 1003,
+            "username" : "testuser3",
+            "email"    : "test3@test.com"
+        }
+    ];
+
     $services.nav('on');
     app.setTitle('Hello World : Users Page');
-    $scope.username = 'testuser';
-    $scope.foo = $services.foo();
     app.send();
 });
 

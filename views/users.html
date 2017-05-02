@@ -1,3 +1,14 @@
     <div id="home"><h1>Users Page</h1></div>
     <p>You are [{username}]</p>
     <p>Here's a message from a service: [{foo}]</p>
+    <table class="table table-bordered table-hover" id="users-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody data-jax-repeat="users|users-row.html">
+        </tbody>
+    </table>
