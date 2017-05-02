@@ -15,8 +15,11 @@
         "getController" : function(name) {
             return (window.app.controllers[name] != undefined) ? window.app.controllers[name] : null;
         },
-        "setTitle"    : function(title) {
+        "setTitle" : function(title) {
             document.title = title;
+        },
+        "getTitle" : function() {
+            return document.title;
         },
         "getScopeLength" : function() {
             var length = 0;
@@ -129,7 +132,7 @@
             "hasErrorRoute" : function() {
                 return (window.app.router.error != null);
             },
-            "hasRoute"  : function(route) {
+            "hasRoute" : function(route) {
                 for (var pattern in window.app.router.routes) {
                     if (pattern.indexOf('/.') != -1) {
                         var regex = new RegExp(pattern);
@@ -142,7 +145,7 @@
                 }
                 return (window.app.router.matched != null);
             },
-            "getRoute"  : function(route) {
+            "getRoute" : function(route) {
                 if (window.app.router.matched == null) {
                     window.app.router.hasRoute(route);
                 }
@@ -154,11 +157,11 @@
                     return null;
                 }
             },
-            "getView"  : function() {
+            "getView" : function() {
                 return (window.app.router.matched != null) ?
                     window.app.router.views[window.app.router.matched] : null;
             },
-            "hasView"  : function() {
+            "hasView" : function() {
                 return ((window.app.router.matched != null) && (window.app.router.views[window.app.router.matched] != undefined));
             }
         },
