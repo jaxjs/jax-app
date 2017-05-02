@@ -70,6 +70,27 @@ app.router.add('/', {
 });
 ```
 
+### Route Parameters
+
+You can define route parameters to pass to your controller like this:
+
+```js
+app.controller('UsersEdit', function(id){
+    $scope.user_id = id;
+    app.setTitle('Users edit page ' + id);
+    app.send();
+});
+```
+
+And your route would look like this:
+
+```js
+app.router.add('/users/:id', {
+    "controller" : 'UsersEdit',
+    "view"       : 'users-edit.html'
+});
+```
+
 SERVICES
 --------
 
