@@ -27,6 +27,21 @@
             }
             return length;
         },
+        "addService" : function(name, service) {
+            window.$services[name] = service;
+        },
+        "hasService" : function(name) {
+            return (window.$services[name] != undefined);
+        },
+        "getService" : function(name) {
+            return (window.$services[name] != undefined) ? window.$services[name] : null;
+        },
+        "removeService" : function(name) {
+            if (window.app.hasService(name)) {
+                window.$services[name] = undefined;
+                delete window.$services[name];
+            }
+        },
         "prepareView" : function() {
             window.app.view = null;
             if ((!window.app.isError) && (jax.http.isSuccess('/views/' + app.router.getView()))) {
@@ -172,7 +187,14 @@
             window.app.dispatch(route);
         }
     };
-    window.$scope = {};
+    window.$scope    = {};
+    window.$services = {
+        "location" : window.location,
+        "http"     : window.jax.http,
+        "browser"  : window.jax.browser,
+        "cookie"   : window.jax.cookie,
+        "storage"  : window.jax.storage
+    }
 })(window);
 
 $(window).on('hashchange', window.app.run);

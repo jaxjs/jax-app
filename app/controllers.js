@@ -21,6 +21,7 @@ app.controller('Logout', function(){
 app.controller('Users', function(){
     app.setTitle('Hello World : Users Page');
     $scope.username = 'testuser';
+    $scope.foo = $services.foo();
     app.send();
 });
 
