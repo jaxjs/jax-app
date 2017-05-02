@@ -4,6 +4,7 @@
 
 (function(window){
     window.app = {
+        "isError"     : false,
         "controllers" : [],
         "controller"  : function(name, controller) {
             window.app.controllers[name] = controller;
@@ -17,35 +18,57 @@
         "setTitle"    : function(title) {
             document.title = title;
         },
+        "getScopeLength" : function() {
+            var length = 0;
+            for (var key in window.$scope) {
+                if (window.$scope[key] != undefined) {
+                    length++;
+                }
+            }
+            return length;
+        },
         "prepareView" : function() {
-            window.app.view = jax.http.get('/views/' + app.router.getView());
+            window.app.view = null;
+            if ((!window.app.isError) && (jax.http.isSuccess('/views/' + app.router.getView()))) {
+                window.app.view = jax.http.get('/views/' + app.router.getView());
+            } else if ((window.app.isError) && (window.app.router.errorView != null) &&
+                (window.app.router.errorView != undefined) && (jax.http.isSuccess('/views/' + window.app.router.errorView))) {
+                window.app.view = jax.http.get('/views/' + window.app.router.errorView);
+            }
         },
         "bind" : function(id) {
             var view = window.app.view;
-            //console.log(window.$scope.username);
+            $(id)[0].innerHTML = view;
+
             for (var key in window.$scope) {
                 if (view.indexOf('[{' + key + '}]') != -1) {
-                    $(id)[0].innerHTML = view.replace(new RegExp("\\[{" + key + "}\\]", 'g'), window.$scope[key]);
-                    var models = $("[data-jax-model='" + key + "']");
-                    for (var i = 0; i < models.length; i++) {
-                        if (models[i].nodeName == 'INPUT') {
-                            $(models[i]).val(window.$scope[key]);
-                        } else {
-                            models[i].innerHTML = window.$scope[key];
-                        }
-                        if ((models[i].nodeName == 'INPUT') || (models[i].nodeName == 'TEXTAREA')) {
-                            $(models[i]).keyup((function (k, m) {
-                                return function () {
-                                    window.$scope[key] = this.value;
-                                    window.app.bind(id);
-                                    //this.focus();
-                                    //$(id)[0].onload = function(m) {
-                                    //    m.focus();
-                                    //};
-                                    //console.log(m.nodeName);
-                                }
-                            }(key, models[i])));
-                        }
+                    $(id)[0].innerHTML = $(id)[0].innerHTML.replace(new RegExp("\\[{" + key + "}\\]", 'g'), '<span data-jax-model="' + key + '">' + window.$scope[key] + '</span>');
+                }
+                var models = $("[data-jax-model='" + key + "']");
+                for (var i = 0; i < models.length; i++) {
+                    if ((models[i].nodeName == 'INPUT') || (models[i].nodeName == 'SELECT')) {
+                        $(models[i]).val(window.$scope[key]);
+                    } else {
+                        models[i].innerHTML = window.$scope[key];
+                    }
+                    if ((models[i].nodeName == 'INPUT') || (models[i].nodeName == 'TEXTAREA')) {
+                        $(models[i]).keyup(window.app.updateModels);
+                    } else if (models[i].nodeName == 'SELECT') {
+                        $(models[i]).change(window.app.updateModels);
+                    }
+                }
+            }
+        },
+        "updateModels" : function() {
+            var key = $(this).data('jax-model');
+            window.$scope[key] = $(this).val();
+            if ((key != null) && (key != undefined)) {
+                var models = $("[data-jax-model='" + key + "']");
+                for (var i = 0; i < models.length; i++) {
+                    if ((models[i].nodeName == 'INPUT') || (models[i].nodeName == 'SELECT')) {
+                        $(models[i]).val(window.$scope[key]);
+                    } else {
+                        models[i].innerHTML = window.$scope[key];
                     }
                 }
             }
@@ -54,6 +77,7 @@
             if (id == undefined) {
                 id = '#my-app';
             }
+            window.app.prepareView();
             window.app.bind(id);
         },
         "view"          : null,
@@ -136,7 +160,8 @@
                     window.app.router.getRoute(route).call();
                 }
             } else if (window.app.router.hasErrorRoute()) {
-                window.app.router.error.call();
+                window.app.isError = true;
+                window.app.getController(window.app.router.error).call();
             }
         },
         "run" : function() {

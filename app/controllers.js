@@ -3,37 +3,36 @@
  */
 
 app.controller('Index', function(){
-    console.log('Index page');
-    app.prepareView();
     $scope.username = 'testuser';
     app.setTitle('Hello World : Home Page');
     app.send();
 });
 
 app.controller('Login', function(){
-    console.log('Login page');
-    app.prepareView();
     app.setTitle('Hello World : Login Page');
     app.send();
 });
 
 app.controller('Logout', function(){
-    console.log('Logout');
     app.setTitle('Hello World : Logout Page');
+    app.send();
 });
 
 app.controller('Users', function(){
-    console.log('Users page');
     app.setTitle('Hello World : Users Page');
+    $scope.username = 'testuser';
+    app.send();
 });
 
 app.controller('UsersEdit', function(id){
-    console.log('Users edit page ' + id);
-
+    $scope.user_id  = id;
+    $scope.username = 'testuser';
     app.setTitle('Hello World : Users edit page ' + id);
+    app.send();
 });
 
 app.controller('Error', function(){
-    console.log('Error');
     app.setTitle('Hello World : Error Page');
+    $scope.username = 'testuser';
+    app.send();
 });
