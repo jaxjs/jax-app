@@ -161,6 +161,7 @@
                 return (window.app.router.error != null);
             },
             "hasRoute" : function(route) {
+                window.app.router.matched = null;
                 for (var pattern in window.app.router.routes) {
                     if (pattern.indexOf('/.') != -1) {
                         var regex = new RegExp(pattern);
@@ -198,6 +199,7 @@
         },
         "dispatch" : function(route) {
             if (window.app.router.hasRoute(route)) {
+                window.app.isError = false;
                 var params = [];
                 if (window.app.router.matched.indexOf('/.') != -1) {
                     var stem = window.app.router.matched.substring(0, window.app.router.matched.indexOf('/.') + 1);
@@ -214,7 +216,8 @@
             }
         },
         "run" : function() {
-            var route = window.location.hash.substring(1);
+            var route = (window.location.hash.length > 0) ?
+                window.location.hash.substring(1) : window.location.pathname;
             if (route == '') {
                 route = '/';
             }
