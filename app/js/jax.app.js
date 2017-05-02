@@ -45,6 +45,19 @@
                 delete window.$services[name];
             }
         },
+        "viewExists" : function(view) {
+            return jax.http.isSuccess('/views/' + view);
+        },
+        "getView" : function(view) {
+            return jax.http.get('/views/' + view);
+        },
+        "setView" : function(id, view) {
+            if ((view != null) && (view != undefined)) {
+                window.app.bind(id, view);
+            } else {
+                $(id)[0].innerHTML = '';
+            }
+        },
         "prepareView" : function(id) {
             window.app.view = null;
             if ((!window.app.isError) && (app.router.getView() != undefined) && (jax.http.isSuccess('/views/' + app.router.getView()))) {
@@ -59,8 +72,10 @@
                 window.app.view = window.app.defaultView;
             }
         },
-        "bind" : function(id) {
-            var view = window.app.view;
+        "bind" : function(id, view) {
+            if ((view == undefined) || (view == null)) {
+                view = window.app.view;
+            }
             $(id)[0].innerHTML = view;
 
             for (var key in window.$scope) {
@@ -173,6 +188,9 @@
             "hasView" : function() {
                 return ((window.app.router.matched != null) && (window.app.router.views[window.app.router.matched] != undefined));
             }
+        },
+        "redirect" : function(url) {
+            window.$services.location.href = url;
         },
         "dispatch" : function(route) {
             if (window.app.router.hasRoute(route)) {

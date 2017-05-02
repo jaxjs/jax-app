@@ -11,8 +11,7 @@ app.router.add('/login', {
     "view"       : 'login.html'
 });
 app.router.add('/logout', {
-    "controller" : 'Logout',
-    "view"       : 'logout.html'
+    "controller" : 'Logout'
 });
 app.router.add('/users', {
     "controller" : 'Users',
