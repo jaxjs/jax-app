@@ -63,10 +63,14 @@
             }
         },
         "prepareView" : function(id) {
-            window.app.view = null;
+            window.app.view     = null;
+            window.app.complete = null;
             if ((!window.app.isError) && (app.router.getView() != undefined) &&
                 (jax.http.isSuccess(window.app.config.viewPath + app.router.getView()))) {
                 window.app.view = jax.http.get(window.app.config.viewPath + app.router.getView());
+                if (app.router.hasComplete()) {
+                    window.app.complete = app.router.getComplete();
+                }
             } else if ((window.app.isError) && (window.app.router.errorView != null) &&
                 (window.app.router.errorView != undefined) &&
                 (jax.http.isSuccess(window.app.config.viewPath + window.app.router.errorView))) {
@@ -105,6 +109,9 @@
                     }
                 }
             }
+            if (window.app.complete != null) {
+                window.app.complete.call();
+            }
         },
         "updateModels" : function() {
             var key = $(this).data('jax-model');
@@ -124,17 +131,19 @@
             }
         },
         "send" : function(id) {
-            if (id == undefined) {
+            if ((id == undefined) || (id == null)) {
                 id = window.app.config.appId;
             }
             window.app.prepareView(id);
             window.app.bind(id);
         },
+        "complete"      : null,
         "view"          : null,
         "defaultView"   : null,
         "router"        : {
             "routes"    : [],
             "views"     : [],
+            "completes" : [],
             "error"     : null,
             "errorView" : null,
             "matched"   : null,
@@ -151,6 +160,9 @@
                 window.app.router.routes[url] = route.controller;
                 if ((route.view != null) && (route.view != undefined)) {
                     window.app.router.views[url] = route.view;
+                }
+                if ((route.complete != null) && (route.complete != undefined)) {
+                    window.app.router.completes[url] = route.complete;
                 }
             },
             "addErrorRoute" : function(route) {
@@ -198,6 +210,14 @@
             "hasView" : function() {
                 return ((window.app.router.matched != null) &&
                     (window.app.router.views[window.app.router.matched] != undefined));
+            },
+            "getComplete" : function() {
+                return (window.app.router.matched != null) ?
+                    window.app.router.completes[window.app.router.matched] : null;
+            },
+            "hasComplete" : function() {
+                return ((window.app.router.matched != null) &&
+                (window.app.router.completes[window.app.router.matched] != undefined));
             }
         },
         "redirect" : function(url) {

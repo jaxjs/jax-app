@@ -11,6 +11,7 @@ app.controller('Index', function() {
 
 app.controller('Login', function() {
     $services.nav('off');
+    $(app.config.appId).hide();
     app.setTitle('Hello World : Login Page');
     app.send();
 });
