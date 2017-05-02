@@ -34,6 +34,25 @@ $(document).ready(function(){
 And within the main ``index.html`` file, you would have:
 
 ```html
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Jax App Example</title>
+
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,300italic,400italic,700,700italic,900,900italic" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/app.css" />
+
+</head>
+
+<body>
     <div id="my-app"></div>
     <script src="app/js/jquery-3.2.1.min.js"></script>
     <script src="app/js/bootstrap.min.js"></script>
@@ -54,7 +73,7 @@ CONTROLLERS & ROUTES
 You can set up controllers like this:
 
 ```js
-app.controller('Index', function(){
+app.controller('Index', function() {
     $scope.username = 'testuser';
     app.setTitle('Hello World : Home Page');
     app.send();
@@ -75,7 +94,7 @@ app.router.add('/', {
 You can define route parameters to pass to your controller like this:
 
 ```js
-app.controller('UsersEdit', function(id){
+app.controller('UsersEdit', function(id) {
     $scope.user_id = id;
     app.setTitle('Users edit page ' + id);
     app.send();
