@@ -49,7 +49,7 @@ And within the main ``index.html`` file, you would have:
 ```
 
 CONTROLLERS & ROUTES
-====================
+--------------------
 
 You can set up controllers like this:
 
@@ -71,7 +71,7 @@ app.router.add('/', {
 ```
 
 SERVICES
-========
+--------
 
 By default, the service container has the following services available:
 
@@ -90,7 +90,7 @@ app.addService('foo', function() {
 ```
 
 BINDING MODELS
-==============
+--------------
 
 Within your view templates, you can bind the model to the view like this:
 
