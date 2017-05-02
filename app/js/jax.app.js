@@ -123,8 +123,13 @@
                         view = jax.http.get(window.app.config.viewPath + tmpl);
                         for (var j = 0; j < window.$scope[key].length; j++) {
                             var row  = view;
-                            for (var prop in window.$scope[key][j]) {
-                                row = row.replace(new RegExp("\\[{" + prop + "}\\]", 'g'), window.$scope[key][j][prop]);
+                            if (window.$scope[key][j].constructor == Object) {
+                                for (var prop in window.$scope[key][j]) {
+                                    row = row.replace(new RegExp("\\[{" + prop + "}\\]", 'g'), window.$scope[key][j][prop]);
+                                }
+                            } else {
+                                row = row.replace(new RegExp("\\[{i}\\]", 'g'), j + 1);
+                                row = row.replace(new RegExp("\\[{value}\\]", 'g'), window.$scope[key][j]);
                             }
                             $(repeats[i]).append(row);
                         }
