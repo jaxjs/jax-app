@@ -45,13 +45,18 @@
                 delete window.$services[name];
             }
         },
-        "prepareView" : function() {
+        "prepareView" : function(id) {
             window.app.view = null;
-            if ((!window.app.isError) && (jax.http.isSuccess('/views/' + app.router.getView()))) {
+            if ((!window.app.isError) && (app.router.getView() != undefined) && (jax.http.isSuccess('/views/' + app.router.getView()))) {
                 window.app.view = jax.http.get('/views/' + app.router.getView());
             } else if ((window.app.isError) && (window.app.router.errorView != null) &&
                 (window.app.router.errorView != undefined) && (jax.http.isSuccess('/views/' + window.app.router.errorView))) {
                 window.app.view = jax.http.get('/views/' + window.app.router.errorView);
+            } else if ((id != undefined) && (id != null)) {
+                if (window.app.defaultView == null) {
+                    window.app.defaultView = $(id)[0].innerHTML;
+                }
+                window.app.view = window.app.defaultView;
             }
         },
         "bind" : function(id) {
@@ -87,6 +92,9 @@
                         $(models[i]).val(window.$scope[key]);
                     } else {
                         models[i].innerHTML = window.$scope[key];
+                        if (models[i].nodeName == 'TEXTAREA') {
+                            $(models[i]).val(window.$scope[key]);
+                        }
                     }
                 }
             }
@@ -95,10 +103,11 @@
             if (id == undefined) {
                 id = '#my-app';
             }
-            window.app.prepareView();
+            window.app.prepareView(id);
             window.app.bind(id);
         },
         "view"          : null,
+        "defaultView"   : null,
         "router"        : {
             "routes"    : [],
             "views"     : [],
