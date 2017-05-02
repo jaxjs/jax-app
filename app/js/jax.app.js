@@ -64,10 +64,12 @@
         },
         "prepareView" : function(id) {
             window.app.view = null;
-            if ((!window.app.isError) && (app.router.getView() != undefined) && (jax.http.isSuccess(window.app.config.viewPath + app.router.getView()))) {
+            if ((!window.app.isError) && (app.router.getView() != undefined) &&
+                (jax.http.isSuccess(window.app.config.viewPath + app.router.getView()))) {
                 window.app.view = jax.http.get(window.app.config.viewPath + app.router.getView());
             } else if ((window.app.isError) && (window.app.router.errorView != null) &&
-                (window.app.router.errorView != undefined) && (jax.http.isSuccess(window.app.config.viewPath + window.app.router.errorView))) {
+                (window.app.router.errorView != undefined) &&
+                (jax.http.isSuccess(window.app.config.viewPath + window.app.router.errorView))) {
                 window.app.view = jax.http.get(window.app.config.viewPath + window.app.router.errorView);
             } else if ((id != undefined) && (id != null)) {
                 if (window.app.defaultView == null) {
@@ -84,7 +86,10 @@
 
             for (var key in window.$scope) {
                 if (view.indexOf('[{' + key + '}]') != -1) {
-                    $(id)[0].innerHTML = $(id)[0].innerHTML.replace(new RegExp("\\[{" + key + "}\\]", 'g'), '<span data-jax-model="' + key + '">' + window.$scope[key] + '</span>');
+                    $(id)[0].innerHTML = $(id)[0].innerHTML.replace(
+                        new RegExp("\\[{" + key + "}\\]", 'g'),
+                        '<span data-jax-model="' + key + '">' + window.$scope[key] + '</span>'
+                    );
                 }
                 var models = $("[data-jax-model='" + key + "']");
                 for (var i = 0; i < models.length; i++) {
@@ -191,7 +196,8 @@
                     window.app.router.views[window.app.router.matched] : null;
             },
             "hasView" : function() {
-                return ((window.app.router.matched != null) && (window.app.router.views[window.app.router.matched] != undefined));
+                return ((window.app.router.matched != null) &&
+                    (window.app.router.views[window.app.router.matched] != undefined));
             }
         },
         "redirect" : function(url) {
