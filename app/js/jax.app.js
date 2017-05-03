@@ -113,26 +113,21 @@
             var repeats = $("[data-jax-repeat]");
 
             for (var i = 0; i < repeats.length; i++) {
-                var attr = $(repeats[i]).attr('data-jax-repeat');
-                if (attr.indexOf('|') != -1) {
-                    var attrAry = attr.split('|');
-                    var key     = attrAry[0];
-                    var tmpl    = attrAry[1];
-                    if ((window.$scope[key] != undefined) && (window.$scope[key].constructor == Array) &&
-                        (jax.http.isSuccess(window.app.config.viewPath + tmpl))) {
-                        view = jax.http.get(window.app.config.viewPath + tmpl);
-                        for (var j = 0; j < window.$scope[key].length; j++) {
-                            var row  = view;
-                            if (window.$scope[key][j].constructor == Object) {
-                                for (var prop in window.$scope[key][j]) {
-                                    row = row.replace(new RegExp("\\[{" + prop + "}\\]", 'g'), window.$scope[key][j][prop]);
-                                }
-                            } else {
-                                row = row.replace(new RegExp("\\[{i}\\]", 'g'), j + 1);
-                                row = row.replace(new RegExp("\\[{value}\\]", 'g'), window.$scope[key][j]);
+                var key = $(repeats[i]).attr('data-jax-repeat');
+                if (window.$scope[key] != undefined) {
+                    view = $(repeats[i])[0].innerHTML;
+                    $(repeats[i])[0].innerHTML = '';
+                    for (var j = 0; j < window.$scope[key].length; j++) {
+                        var row  = view;
+                        if (window.$scope[key][j].constructor == Object) {
+                            for (var prop in window.$scope[key][j]) {
+                                row = row.replace(new RegExp("\\[{" + prop + "}\\]", 'g'), window.$scope[key][j][prop]);
                             }
-                            $(repeats[i]).append(row);
+                        } else {
+                            row = row.replace(new RegExp("\\[{i}\\]", 'g'), j + 1);
+                            row = row.replace(new RegExp("\\[{value}\\]", 'g'), window.$scope[key][j]);
                         }
+                        $(repeats[i]).append(row);
                     }
                 }
             }
@@ -284,7 +279,136 @@
         "http"     : window.jax.http,
         "browser"  : window.jax.browser,
         "cookie"   : window.jax.cookie,
-        "storage"  : window.jax.storage
+        "storage"  : window.jax.storage,
+        "filter"   : {
+            "stripTags" : function(str) {
+                return str.replace(/<\/?[^>]+(>|$)/g, '');
+            },
+            "html" : function(str, quot, strict) {
+                str = str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                if ((quot != undefined) && (quot != null)) {
+                    str = str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                }
+                if ((strict != undefined) && (strict != null)) {
+                    str = str.replace(/\(/g, '&#40;').replace(/\)/g, '&#41;').replace(/\//g, '&#47;')
+                             .replace(/:/g, '&#58;').replace(/\[/g, '&#91;').replace(/\]/g, '&#93;')
+                             .replace(/\\/g, '&#92;').replace(/{/g, '&#123;').replace(/}/g, '&#125;');
+                }
+                return str;
+            },
+            "dehtml" : function(str, quot, strict) {
+                str = str.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                if (quot != undefined) {
+                    str = str.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+                }
+                if (strict != undefined) {
+                    str = str.replace(/&#40;/g, '(').replace(/&#41;/g, ')').replace(/&#47;/g, '/')
+                             .replace(/&#58;/g, ':').replace(/&#91;/g, '[').replace(/&#93;/g, ']')
+                             .replace(/&#92;/g, '\\').replace(/&#123;/g, '{').replace(/&#125;/g, '}');
+                }
+                return str;
+            },
+            "links" : function(str, tar) {
+                var matches = [];
+                var targ    = (tar != null) ? ' target="_blank"' : '';
+
+                var protocolMatches = this.match(/[f|ht]+tp:\/\/[^\s]*/g);
+                var linkMatches     = this.match(/\s[\w]+[a-zA-Z0-9\.\-\_]+(\.[a-zA-Z]{2,4})/g);
+                var mailMatches     = this.match(/[a-zA-Z0-9\.\-\_+%]+@[a-zA-Z0-9\-\_\.]+\.[a-zA-Z]{2,4}/g);
+
+                if (protocolMatches[0] != undefined) {
+                    for (var i = 0; i < protocolMatches.length; i++) {
+                        matches.push([protocolMatches[i], '<a href="' + protocolMatches[i].trim() + '"' + targ + '>' +
+                        protocolMatches[i].trim() + '</a>']);
+                    }
+                }
+
+                if (linkMatches[0] != undefined) {
+                    for (var i = 0; i < linkMatches.length; i++) {
+                        var lnk = linkMatches[i].trim();
+                        if (lnk.substring(0, 4) == 'ftp.') {
+                            lnk = 'ftp://' + lnk;
+                        } else if (lnk.substring(0, 4) == 'www.') {
+                            lnk = 'http://' + lnk;
+                        } else if (lnk.substring(0, 4) != 'http') {
+                            lnk = 'http://' + lnk;
+                        }
+                        matches.push([linkMatches[i], ' <a href="' + lnk + '"' + targ + '>' + linkMatches[i].trim() + '</a>']);
+                    }
+                }
+
+                if (mailMatches[0] != undefined) {
+                    for (var i = 0; i < mailMatches.length; i++) {
+                        matches.push([mailMatches[i], '<a href="mailto:' + mailMatches[i].trim() + '"' + targ + '>' +
+                        mailMatches[i].trim() + '</a>']);
+                    }
+                }
+
+                if (matches[0] != undefined) {
+                    for (var i = 0; i < matches.length; i++) {
+                        str = str.replace(matches[i][0], matches[i][1]);
+                    }
+                }
+
+                return str;
+            },
+            "addSlashes" : function(str, quot) {
+                str = str.replace(/\\/g, '\\\\');
+                if ((quot != undefined) && (quot.toLowerCase() == 'single')) {
+                    str = str.replace(/\'/g, "\\'");
+                } else if ((quot != undefined) && (quot.toLowerCase() == 'double')) {
+                    str = str.replace(/\"/g, '\\"');
+                } else {
+                    str = str.replace(/\"/g, '\\"').replace(/\'/g, "\\'");
+                }
+                return str;
+            },
+            "stripSlashes" : function(str, quot) {
+                str = str.replace(/\\\\/g, '\\');
+                if ((quot != undefined) && (quot.toLowerCase() == 'single')) {
+                    str = str.replace(/\\'/g, "'");
+                } else if ((quot != undefined) && (quot.toLowerCase() == 'double')) {
+                    str = str.replace(/\\"/g, '"');
+                } else {
+                    str = str.replace(/\\'/g, "'").replace(/\\"/g, '"');
+                }
+                return str;
+            },
+            "money" : function(num, cur, dec) {
+                var decimal = '';
+
+                if (cur == null) {
+                    cur = '$';
+                }
+                if (dec == null) {
+                    dec = 2;
+                }
+
+                if (num.indexOf('.') != -1) {
+                    var numAry = num.split('.');
+                    var intgr = parseInt(numAry[0].replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+                    if (dec > 0) {
+                        decimal = Number('.' + numAry[1]).toFixed(dec);
+                    } else {
+                        decimal = '';
+                    }
+                } else {
+                    var intgr = parseInt(num.replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+                    if (dec > 0) {
+                        decimal = '.';
+                        for (var i = 0; i < dec; i++) {
+                            decimal += '0';
+                        }
+                    } else {
+                        decimal = '';
+                    }
+                }
+
+                decimal = parseFloat(decimal);
+
+                return cur + new Number(intgr + decimal).toFixed(dec);
+            }
+        }
     }
 })(window);
 
